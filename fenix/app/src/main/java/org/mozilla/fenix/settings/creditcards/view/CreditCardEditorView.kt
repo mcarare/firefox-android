@@ -23,6 +23,7 @@ import org.mozilla.fenix.settings.creditcards.interactor.CreditCardEditorInterac
 import org.mozilla.fenix.settings.creditcards.last4Digits
 import org.mozilla.fenix.settings.creditcards.toCreditCardNumber
 import org.mozilla.fenix.settings.creditcards.validateCreditCardNumber
+import org.mozilla.fenix.settings.creditcards.validateNameOnCard
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -131,9 +132,13 @@ class CreditCardEditorView(
             binding.cardNumberTitle.setTextColor(binding.root.context.getColorFromAttr(R.attr.textWarning))
         }
 
-        if (binding.nameOnCardInput.text.toString().isNotBlank()) {
+        if (binding.nameOnCardInput.text.toString().isNotBlank() &&
+            binding.nameOnCardInput.text.toString().validateNameOnCard()
+        ) {
             binding.nameOnCardLayout.error = null
-            binding.nameOnCardTitle.setTextColor(binding.root.context.getColorFromAttr(R.attr.textPrimary))
+            binding.nameOnCardTitle.setTextColor(
+                binding.root.context.getColorFromAttr(R.attr.textPrimary),
+            )
         } else {
             isValid = false
 
@@ -162,7 +167,9 @@ class CreditCardEditorView(
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.DAY_OF_MONTH, 1)
 
-        for (month in 0..NUMBER_OF_MONTHS) {
+        val currentMonth = calendar.get(Calendar.MONTH)
+
+        for (month in currentMonth..NUMBER_OF_MONTHS) {
             calendar.set(Calendar.MONTH, month)
             adapter.add(dateFormat.format(calendar.time))
         }

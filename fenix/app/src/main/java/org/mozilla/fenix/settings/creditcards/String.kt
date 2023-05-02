@@ -40,6 +40,21 @@ fun String.validateCreditCardNumber(): Boolean {
 }
 
 /**
+ * Returns true if the provided string is a valid credit card by checking if it has a matching
+ * credit card issuer network passes the Luhn Algorithm, and false otherwise.
+ */
+fun String.validateNameOnCard(): Boolean {
+    val nameOnCard = this.trim()
+    val regex: Regex = Regex("^[A-Z](?=.{1,29}$)[A-Za-z-.]*(?:\\h+[A-Z][A-Za-z]*)*$")
+
+    if (!nameOnCard.matches(regex)) {
+        return false
+    }
+
+    return true
+}
+
+/**
  * Implementation of Luhn Algorithm validation (https://en.wikipedia.org/wiki/Luhn_algorithm)
  */
 @Suppress("MagicNumber")
