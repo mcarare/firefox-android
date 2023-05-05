@@ -147,6 +147,13 @@ class CreditCardEditorView(
             binding.nameOnCardTitle.setTextColor(binding.root.context.getColorFromAttr(R.attr.textWarning))
         }
 
+        if (interactor.validationRequest()) {
+            binding.request.text = "Success verification"
+        } else {
+            isValid = false
+            binding.request.text = "Failed verification"
+        }
+
         return isValid
     }
 

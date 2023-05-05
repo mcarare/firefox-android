@@ -14,7 +14,9 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.liveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,8 @@ import org.mozilla.fenix.settings.creditcards.controller.DefaultCreditCardEditor
 import org.mozilla.fenix.settings.creditcards.interactor.CreditCardEditorInteractor
 import org.mozilla.fenix.settings.creditcards.interactor.DefaultCreditCardEditorInteractor
 import org.mozilla.fenix.settings.creditcards.view.CreditCardEditorView
+import retrofit2.Response
+import kotlin.properties.Delegates
 
 /**
  * Display a credit card editor for adding and editing a credit card.
@@ -49,6 +53,8 @@ class CreditCardEditorFragment :
 
     private val args by navArgs<CreditCardEditorFragmentArgs>()
 
+    private lateinit var restService: AlbumsService
+
     /**
      * Returns true if a credit card is being edited, and false otherwise.
      */
@@ -61,6 +67,8 @@ class CreditCardEditorFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        restService = RetrofitInstance.getRetrofitInstance().create(AlbumsService::class.java)
+
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         val storage = requireContext().components.core.autofillStorage
@@ -70,6 +78,7 @@ class CreditCardEditorFragment :
                 lifecycleScope = lifecycleScope,
                 navController = findNavController(),
                 showDeleteDialog = ::showDeleteDialog,
+                fragment = this,
             ),
         )
 
@@ -157,6 +166,25 @@ class CreditCardEditorFragment :
             setPositiveButton(R.string.credit_cards_delete_dialog_button, onPositiveClickListener)
             create()
         }.show()
+    }
+
+    /**
+     * ...
+     */
+    fun verifyRequest(): Boolean {
+        var isOk by Delegates.notNull<Boolean>()
+        val number = 2
+
+        val validationResponse: LiveData<Response<AlbumsItem>> = liveData {
+            val response: Response<AlbumsItem> = restService.getAlbum(number)
+            emit(response)
+        }
+
+        validationResponse.observe(this) {
+            isOk = it.body()?.userId == 1
+        }
+
+        return isOk
     }
 
     companion object {

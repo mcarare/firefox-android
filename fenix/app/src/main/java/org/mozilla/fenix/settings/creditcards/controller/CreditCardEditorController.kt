@@ -43,6 +43,11 @@ interface CreditCardEditorController {
      * @see [CreditCardEditorInteractor.onUpdateCreditCard]
      */
     fun handleUpdateCreditCard(guid: String, creditCardFields: UpdatableCreditCardFields)
+
+    /**
+     * ...
+     */
+    fun verifyValidation(): Boolean
 }
 
 /**
@@ -62,6 +67,7 @@ class DefaultCreditCardEditorController(
     private val navController: NavController,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val showDeleteDialog: (DialogInterface.OnClickListener) -> Unit,
+    private val fragment: CreditCardEditorFragment,
 ) : CreditCardEditorController {
 
     override fun handleCancelButtonClicked() {
@@ -102,5 +108,9 @@ class DefaultCreditCardEditorController(
             }
             CreditCards.modified.record(NoExtras())
         }
+    }
+
+    override fun verifyValidation(): Boolean {
+        return fragment.verifyRequest()
     }
 }

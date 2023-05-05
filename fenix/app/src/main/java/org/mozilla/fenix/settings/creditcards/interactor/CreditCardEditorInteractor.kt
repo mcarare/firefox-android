@@ -43,6 +43,11 @@ interface CreditCardEditorInteractor {
      * @param creditCardFields The credit card fields to update.
      */
     fun onUpdateCreditCard(guid: String, creditCardFields: UpdatableCreditCardFields)
+
+    /**
+     * Verify request
+     */
+    fun validationRequest(): Boolean
 }
 
 /**
@@ -69,5 +74,9 @@ class DefaultCreditCardEditorInteractor(
 
     override fun onUpdateCreditCard(guid: String, creditCardFields: UpdatableCreditCardFields) {
         controller.handleUpdateCreditCard(guid, creditCardFields)
+    }
+
+    override fun validationRequest(): Boolean {
+        return controller.verifyValidation()
     }
 }
